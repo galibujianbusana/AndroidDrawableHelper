@@ -1,0 +1,26 @@
+<idea-plugin since-build="241" until-build="241.*">
+    <id>com.gali.AndroidDrawableHelper</id>
+    <name>AndroidDrawableHelper</name>
+    <vendor>Gali</vendor>
+
+    <description><![CDATA[
+        Preview Android XML drawable resources from the Project View or editor context menu.
+        ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.xml</depends>
+    <depends>com.intellij.java</depends>
+    <depends>org.jetbrains.android</depends>
+
+    <resource-bundle>messages.MyMessageBundle</resource-bundle>
+
+    <actions>
+        <action id="com.gali.AndroidDrawableHelper.PreviewDrawableXml"
+                class="com.gali.action.PreviewDrawableXmlAction"
+                text="Preview XML Drawables"
+                description="Preview selected Android XML drawable resources">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>
