@@ -11,7 +11,7 @@ import com.gali.ui.DrawablePreviewDialog
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
@@ -36,10 +36,10 @@ class PreviewDrawableXmlAction : AnAction() {
             return
         }
 
-        val themes = ReadAction.compute<List<AppTheme>, RuntimeException> {
+        val themes = ApplicationManager.getApplication().runReadAction<List<AppTheme>> {
             AppThemeResolver(project).findThemes()
         }
-        val repository = ReadAction.compute<ResourceRepository, RuntimeException> {
+        val repository = ApplicationManager.getApplication().runReadAction<ResourceRepository> {
             ResourceRepository.build(project)
         }
         val initialTheme = themes.firstOrNull() ?: AppTheme.None
@@ -50,7 +50,7 @@ class PreviewDrawableXmlAction : AnAction() {
     }
 
     private fun readResolvedFiles(event: AnActionEvent): List<VirtualFile> =
-        ReadAction.compute<List<VirtualFile>, RuntimeException> {
+        ApplicationManager.getApplication().runReadAction<List<VirtualFile>> {
             DrawableSelectionResolver.resolve(event)
         }
 
@@ -61,7 +61,7 @@ class PreviewDrawableXmlAction : AnAction() {
         repository: ResourceRepository,
     ): List<PreviewItem> {
         val parser = DrawableXmlParser(project, appTheme, repository)
-        return ReadAction.compute<List<PreviewItem>, RuntimeException> {
+        return ApplicationManager.getApplication().runReadAction<List<PreviewItem>> {
             files.map { file ->
                 PreviewItem(
                     name = file.name,
