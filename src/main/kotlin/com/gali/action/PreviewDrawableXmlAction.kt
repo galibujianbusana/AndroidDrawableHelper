@@ -8,6 +8,7 @@ import com.gali.drawable.DrawableXmlParser
 import com.gali.drawable.PreviewItem
 import com.gali.drawable.ResourceRepository
 import com.gali.ui.DrawablePreviewDialog
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ReadAction
@@ -16,14 +17,16 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
 
 class PreviewDrawableXmlAction : AnAction() {
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
     override fun update(event: AnActionEvent) {
-        val files = DrawableSelectionResolver.resolve(event)
+        val files = readResolvedFiles(event)
         event.presentation.isEnabledAndVisible = files.isNotEmpty()
     }
 
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.project ?: return
-        val files = DrawableSelectionResolver.resolve(event)
+        val files = readResolvedFiles(event)
         if (files.isEmpty()) {
             Messages.showInfoMessage(
                 project,
@@ -45,6 +48,11 @@ class PreviewDrawableXmlAction : AnAction() {
             parseItems(project, files, theme, repository)
         }.show()
     }
+
+    private fun readResolvedFiles(event: AnActionEvent): List<VirtualFile> =
+        ReadAction.compute<List<VirtualFile>, RuntimeException> {
+            DrawableSelectionResolver.resolve(event)
+        }
 
     private fun parseItems(
         project: Project,
